@@ -43,6 +43,35 @@ const MinigameManager = {
     render(ctx) {
         if (!this.active || !this.currentGame) return;
         this.currentGame.render(ctx);
+        // Draw intro overlay for first 2.5s
+        if (this.currentGame.introTimer !== undefined && this.currentGame.introTimer < 2.5) {
+            const alpha = Math.min(1, (2.5 - this.currentGame.introTimer) / 0.5);
+            this._renderIntroOverlay(ctx, this.currentGame.introLines || [], alpha);
+        }
+    },
+
+    _renderIntroOverlay(ctx, lines, alpha) {
+        ctx.save();
+        ctx.globalAlpha = alpha * 0.88;
+        ctx.fillStyle = '#060616';
+        ctx.fillRect(40, 90, 400, lines.length * 22 + 44);
+        ctx.strokeStyle = '#5588cc';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(40, 90, 400, lines.length * 22 + 44);
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = '#ffdd57';
+        ctx.font = 'bold 11px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('COMMENT JOUER', 240, 108);
+        ctx.fillStyle = '#ddeeff';
+        ctx.font = '9px monospace';
+        for (let i = 0; i < lines.length; i++) {
+            ctx.fillText(lines[i], 240, 126 + i * 22);
+        }
+        ctx.fillStyle = 'rgba(150,170,220,0.7)';
+        ctx.font = '8px monospace';
+        ctx.fillText('(disparait automatiquement)', 240, 128 + lines.length * 22);
+        ctx.restore();
     },
 
     isActive() { return this.active; }
@@ -66,12 +95,20 @@ class CookingMinigame {
         this.cookDuration = 3; // seconds to cook
         this.cookingActive = false;
         this.doneTimer = 0;
+        this.introTimer = 0;
+        this.introLines = [
+            'Fleches HAUT/BAS pour choisir un ingredient',
+            'Espace ou clic pour selectionner',
+            'Attends que la cuisson soit terminee !',
+            'Echap pour annuler',
+        ];
     }
 
     init() {}
 
     update(dt) {
         this.timer += dt;
+        this.introTimer += dt;
 
         if (this.phase === 'fridge') {
             const items = this.fridge.filter(f => f.quantity > 0);
@@ -162,7 +199,7 @@ class CookingMinigame {
             // Fridge UI
             Engine.drawRect(ctx, 80, 20, 320, 280, '#ddeeff', 0.95);
             Engine.drawText(ctx, 'FRIGO', 240, 28, '#336', 12, 'center');
-            Engine.drawText(ctx, 'Choisis un ingredient:', 240, 44, '#666', 8, 'center');
+            Engine.drawText(ctx, 'Choisis un ingredient  [Fleches + Espace  ou  clic]', 240, 44, '#666', 8, 'center');
 
             const items = this.fridge.filter(f => f.quantity > 0);
             for (let i = 0; i < items.length && i < 8; i++) {
@@ -253,12 +290,20 @@ class WashingMinigame {
         this.rinseProgress = 0;
         this.phaseComplete = false;
         this.scrubTimer = 0;
+        this.introTimer = 0;
+        this.introLines = [
+            'Phase 1 - SAVON : Glisse la souris sur chaque zone',
+            'Phase 2 - DOUCHE : Clique sur la pomme de douche',
+            'Phase 3 - SERVIETTE : Glisse sur chaque zone mouillée',
+            'Phase 4 - SECHOIR : Clique sur les zones humides',
+        ];
     }
 
     init() {}
 
     update(dt) {
         this.timer += dt;
+        this.introTimer += dt;
 
         if (this.phase === 'soap') {
             // Drag soap across zones
@@ -368,9 +413,11 @@ class WashingMinigame {
             Engine.drawRect(ctx, x, y, 30, 30, (Math.floor(x/32) + Math.floor(y/32)) % 2 === 0 ? '#bbddee' : '#aaccdd');
         }
 
-        // Phase title
+        // Phase title + hint
         const titles = { soap: 'Savonne l\'animal !', rinse: 'Rince sous la douche !', towel: 'Frotte avec la serviette !', dryer: 'Seche les parties mouillees !', done: 'Tout propre !' };
-        Engine.drawText(ctx, titles[this.phase], 240, 15, '#336', 10, 'center');
+        const hints  = { soap: 'Glisse la souris sur chaque zone coloree', rinse: 'Clique sur la pomme de douche', towel: 'Glisse la souris sur les zones mouillees', dryer: 'Clique sur les zones encore humides', done: 'Bravo !' };
+        Engine.drawText(ctx, titles[this.phase], 240, 12, '#336', 10, 'center');
+        Engine.drawText(ctx, hints[this.phase], 240, 26, '#558', 8, 'center');
 
         // Draw animal body outline (simplified)
         Engine.drawRect(ctx, 175, 85, 110, 150, '#ddd', 0.3);
@@ -467,6 +514,12 @@ class PettingMinigame {
         this.jumpTimer = 0;
         this.jumping = false;
         this.doneTimer = 0;
+        this.introTimer = 0;
+        this.introLines = [
+            'Maintiens le clic gauche enfonce',
+            'Glisse la souris de haut en bas sur l\'animal',
+            'Fais ' + this.strokeTarget + ' caresses pour rendre l\'animal heureux !',
+        ];
     }
 
     init() {}
@@ -474,6 +527,7 @@ class PettingMinigame {
     update(dt) {
         this.timer += dt;
         this.pawsTimer += dt;
+        this.introTimer += dt;
 
         // Track stroking: dragging across the animal area
         if (Engine.isDragging() && Engine.isMouseDown()) {
@@ -530,7 +584,8 @@ class PettingMinigame {
         // Soft background
         Engine.drawRect(ctx, 0, 0, 480, 320, '#fff5f0');
 
-        Engine.drawText(ctx, 'Caresse l\'animal !', 240, 15, '#cc6688', 10, 'center');
+        Engine.drawText(ctx, 'Caresse l\'animal !', 240, 12, '#cc6688', 10, 'center');
+        Engine.drawText(ctx, 'Clic maintenu + glisse la souris de haut en bas', 240, 26, '#bb5577', 8, 'center');
 
         // Paws on glass effect (pulsing)
         const pawAlpha = 0.3 + Math.sin(this.pawsTimer * 3) * 0.15;
@@ -589,13 +644,21 @@ class DogPlayMinigame {
         this.maxFetches = 5;
         this.timeLimit = 30;
         this.totalTime = 0;
+        this.introTimer = 0;
+        this.introLines = [
+            'Maintiens ESPACE enfonce pour charger le lancer',
+            'Relache ESPACE quand la barre de puissance est pleine',
+            'Le chien va chercher la balle et la rapporte !',
+            'Objectif : ' + this.maxFetches + ' lancers en ' + this.timeLimit + ' secondes',
+        ];
     }
 
-    init() { this.phase = 'countdown'; this.countdownNum = 3; this.timer = 0; }
+    init() { this.phase = 'countdown'; this.countdownNum = 3; this.timer = 0; this.introTimer = 0; }
 
     update(dt) {
         this.timer += dt;
         this.totalTime += dt;
+        this.introTimer += dt;
 
         if (this.totalTime > this.timeLimit && this.phase !== 'done') {
             this.phase = 'done';
@@ -694,13 +757,18 @@ class DogPlayMinigame {
             Engine.drawText(ctx, this.countdownNum.toString(), 240, 130, '#fff', 24, 'center');
         }
 
+        if (this.phase === 'ready' || this.phase === 'countdown') {
+            Engine.drawText(ctx, 'Appuie sur ESPACE pour lancer la balle !', 240, 30, '#fff', 8, 'center');
+        }
         if (this.phase === 'charging') {
-            Engine.drawText(ctx, 'Maintiens puis lache !', 240, 30, '#fff', 8, 'center');
+            Engine.drawText(ctx, 'Maintiens ESPACE... relache au bon moment !', 240, 30, '#ffdd00', 8, 'center');
             // Power bar
             Engine.drawProgressBar(ctx, 60, 260, 200, 16, this.power, 1, '#ff8800');
+            Engine.drawText(ctx, 'Puissance', 170, 280, '#fff', 7, 'center');
             // Sweet spot indicator
             const sweetX = 60 + 0.7 * 200;
             Engine.drawRect(ctx, sweetX - 2, 258, 4, 20, '#00ff00');
+            Engine.drawText(ctx, '|ideal', sweetX + 4, 259, '#00ff00', 6);
         }
 
         // Draw dog
@@ -750,12 +818,20 @@ class CatPlayMinigame {
         this.distanceMoved = 0;
         this.timeLimit = 25;
         this.phase = 'playing'; // playing, done
+        this.introTimer = 0;
+        this.introLines = [
+            'Utilise les FLECHES pour deplacer la pelote de laine',
+            'Le chat te suivra automatiquement',
+            'ARRETE-TOI pour que le chat saute dessus !',
+            'Objectif : ' + this.catchTarget + ' attrapes en ' + this.timeLimit + ' secondes',
+        ];
     }
 
     init() {}
 
     update(dt) {
         this.timer += dt;
+        this.introTimer += dt;
 
         if (this.timer > this.timeLimit && this.phase !== 'done') {
             this.phase = 'done';
@@ -840,7 +916,7 @@ class CatPlayMinigame {
         // HUD
         Engine.drawText(ctx, `Attrapes: ${this.catchCount}/${this.catchTarget}`, 10, 10, '#663', 8);
         Engine.drawText(ctx, `Temps: ${Math.ceil(this.timeLimit - this.timer)}s`, 400, 10, '#663', 8);
-        Engine.drawText(ctx, 'Bouge puis arrete-toi !', 240, 30, '#996', 8, 'center');
+        Engine.drawText(ctx, 'Fleches pour bouger la pelote — arrete-toi pour que le chat saute !', 240, 30, '#996', 8, 'center');
 
         // Yarn trail
         if (this.distanceMoved > 10) {

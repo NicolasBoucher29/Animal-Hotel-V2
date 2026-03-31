@@ -224,10 +224,17 @@ const DIALOGUES = {
         pages: [
             { speaker: 'Lucie', text: "Bienvenue a l'Hotel des Animaux ! Je suis Lucie, la receptionniste." },
             { speaker: 'Lucie', text: "Tu es le nouveau gerant de cet hotel magique pour animaux !" },
-            { speaker: 'Lucie', text: "Les gens du village nous confient leurs animaux de compagnie." },
-            { speaker: 'Lucie', text: "Tu dois en prendre soin : les nourrir, les laver et jouer avec eux !" },
-            { speaker: 'Lucie', text: "Utilise les fleches pour te deplacer et Espace pour interagir." },
-            { speaker: 'Lucie', text: "Appuie sur M pour ouvrir le menu. Bonne chance !" },
+            { speaker: 'Lucie', text: "Les gens du village nous confient leurs animaux. Tu dois t'en occuper !" },
+            { speaker: 'Lucie', text: "DEPLACEMENT : Fleches ou ZQSD pour bouger ton personnage." },
+            { speaker: 'Lucie', text: "INTERACTION : Approche-toi d'un animal ou d'un PNJ et appuie sur ESPACE." },
+            { speaker: 'Lucie', text: "SOINS : quand tu parles a un animal, choisis Cuisiner, Caresser, Laver ou Jouer." },
+            { speaker: 'Lucie', text: "CARESSER : maintiens le clic gauche et glisse la souris sur l'animal !" },
+            { speaker: 'Lucie', text: "LAVER : glisse la souris pour savonner, clique pour rincer et secher." },
+            { speaker: 'Lucie', text: "CUISINER : utilise les Fleches pour choisir un aliment, Espace pour cuisiner." },
+            { speaker: 'Lucie', text: "JOUER avec le chien : maintiens ESPACE pour charger, lache pour lancer la balle !" },
+            { speaker: 'Lucie', text: "MENU : appuie sur M pour voir tes animaux, inventaire, quetes et sauvegarder." },
+            { speaker: 'Lucie', text: "SAUVEGARDE RAPIDE : Ctrl+S a tout moment. La partie se sauvegarde aussi chaque jour !" },
+            { speaker: 'Lucie', text: "Les instructions apparaissent au debut de chaque mini-jeu. Bonne chance !" },
         ]
     },
 

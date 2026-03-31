@@ -135,9 +135,11 @@ const Game = {
         }
 
         // Credits
-        ctx.fillStyle = '#555';
+        ctx.fillStyle = '#556';
         ctx.font = '8px monospace';
-        ctx.fillText('Fleches/ZQSD = Deplacer | Espace = Action | M = Menu', 240, 300);
+        ctx.fillText('Fleches/ZQSD = Bouger  |  Espace = Interagir  |  M = Menu  |  Ctrl+S = Sauvegarder', 240, 294);
+        ctx.fillStyle = '#445';
+        ctx.fillText('Caresser = glisse souris  |  Laver = glisse+clic  |  Lancer = maintenir Espace', 240, 306);
 
         ctx.textAlign = 'left';
     },
@@ -564,10 +566,10 @@ const Game = {
             speaker: animal.name,
             text: `Faim: ${Math.floor(animal.hunger)}% | Joie: ${Math.floor(animal.happiness)}% | Proprete: ${Math.floor(animal.cleanliness)}%`,
             choices: [
-                { text: 'Cuisiner', action: () => this.cookForAnimal() },
-                { text: 'Caresser', action: () => this.petAnimal() },
-                { text: 'Laver', action: () => this.washAnimal() },
-                { text: 'Jouer', action: () => this.playWithAnimal() },
+                { text: 'Cuisiner  [Fleches/clic pour choisir, Espace pour cuisiner]', action: () => this.cookForAnimal() },
+                { text: 'Caresser  [Glisse la souris sur l\'animal]', action: () => this.petAnimal() },
+                { text: 'Laver     [Glisse pour savonner, clic pour rincer/secher]', action: () => this.washAnimal() },
+                { text: 'Jouer     [Chien: Espace pour lancer | Chat: Fleches pour bouger]', action: () => this.playWithAnimal() },
             ]
         });
 
