@@ -45,6 +45,14 @@ const Engine = {
 
         // Keyboard
         window.addEventListener('keydown', e => {
+            // Quick-save: Ctrl+S or F5
+            if ((e.ctrlKey && e.key === 's') || e.key === 'F5') {
+                e.preventDefault();
+                if (typeof Game !== 'undefined' && Game.screen === 'playing') {
+                    Game.saveCurrentGame();
+                }
+                return;
+            }
             if (!this.keys[e.key]) this.keysJustPressed[e.key] = true;
             this.keys[e.key] = true;
             e.preventDefault();

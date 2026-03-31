@@ -180,6 +180,11 @@ const DialogueSystem = {
         if (choice.action) {
             choice.action();
         }
+
+        // choice.action() may have closed the dialogue (e.g. to launch a minigame)
+        // — bail out before touching currentDialogue or currentPage
+        if (!this.active || !this.currentDialogue) return;
+
         if (choice.nextDialogue) {
             this.close();
             this.start(choice.nextDialogue);

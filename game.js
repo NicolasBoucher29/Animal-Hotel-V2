@@ -1444,6 +1444,9 @@ const Game = {
 
     // ==================== DAY CYCLE & EVENTS ====================
     _onNewDay() {
+        // Auto-save each new day (silent)
+        this._autoSave();
+
         // EPIC 5: Phone call for new animal (instead of just appearing)
         if (this.state.hotelAnimals.length < 6 && Math.random() < 0.5) {
             this._phoneCallNewAnimal();
@@ -1561,27 +1564,44 @@ const Game = {
     },
 
     // ==================== SAVE ====================
-    saveCurrentGame() {
+    _buildSaveState() {
         this._syncAnimalStates();
         const state = { ...this.state };
         state.playerX = Player.x;
         state.playerY = Player.y;
         state.playerDirection = Player.direction;
-
         const questState = QuestManager.serialize();
         state.activeQuests = questState.activeQuests;
         state.completedQuests = questState.completedQuests;
+        return state;
+    },
 
-        if (Engine.saveGame(state)) {
-            DialogueSystem.startDirect([
-                { speaker: '', text: 'Partie sauvegardee !' }
-            ]);
+    _autoSave() {
+        Engine.saveGame(this._buildSaveState());
+        this._showSaveToast('Sauvegarde auto...');
+    },
+
+    saveCurrentGame() {
+        if (Engine.saveGame(this._buildSaveState())) {
             Engine.playSound('quest');
+            this._showSaveToast('Partie sauvegardee !');
         } else {
-            DialogueSystem.startDirect([
-                { speaker: '', text: 'Erreur de sauvegarde...' }
-            ]);
+            this._showSaveToast('Erreur de sauvegarde...');
         }
+    },
+
+    _showSaveToast(msg) {
+        let toast = document.getElementById('save-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'save-toast';
+            toast.style.cssText = 'position:absolute;top:48px;right:8px;background:rgba(0,180,80,0.92);color:#fff;padding:5px 12px;border-radius:6px;font-family:monospace;font-size:12px;z-index:50;pointer-events:none;transition:opacity 0.5s';
+            document.getElementById('game-wrapper').appendChild(toast);
+        }
+        toast.textContent = msg;
+        toast.style.opacity = '1';
+        clearTimeout(this._saveToastTimer);
+        this._saveToastTimer = setTimeout(() => { toast.style.opacity = '0'; }, 1800);
     },
 
     // ==================== HUD ====================
