@@ -295,7 +295,11 @@ html, body {
   position:relative;
 }
 .room-rooms {
-  background: linear-gradient(180deg, #e8daef 0%, #d7bde2 100%);
+  background: linear-gradient(180deg, #c4a882 0%, #8b6914 100%);
+  position: relative;
+}
+.room-interior {
+  position: relative;
 }
 .room-kitchen {
   background: linear-gradient(180deg, #fdebd0 0%, #f9e2ae 100%);

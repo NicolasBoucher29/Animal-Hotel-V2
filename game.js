@@ -174,6 +174,8 @@ const Game = {
 
   // ===== NAVIGATION =====
   navigateTo(room) {
+    // Reset room viewing state when navigating away from rooms
+    if (room !== 'rooms') Scenes._viewingRoom = null;
     this.currentRoom = room;
     // Update nav active state
     document.querySelectorAll('.nav-btn').forEach(b => {
@@ -351,10 +353,8 @@ const Game = {
   openRoomEditor(roomIdx) {
     this.editorRoom = roomIdx;
     document.getElementById('animal-panel').style.display = 'none';
+    Scenes._viewingRoom = roomIdx;
     this.navigateTo('rooms');
-    // Show editor inline (simplified)
-    this.notify(`🛏️ Chambre ${roomIdx+1} sélectionnée`);
-    // TODO: full room editor UI
   },
 
   // ===== FRIDGE =====
