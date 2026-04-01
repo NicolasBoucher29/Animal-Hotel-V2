@@ -8,43 +8,275 @@ const Scenes = {
   renderLobby(container, state) {
     container.innerHTML = '';
     container.className = 'room-scene room-lobby';
+    container.style.cssText = 'overflow:hidden;padding:0;';
 
-    // Decorations
-    const decos = [
-      { emoji:'🌿', style:'top:5%;left:5%;font-size:40px;' },
-      { emoji:'🌸', style:'top:3%;right:8%;font-size:35px;' },
-      { emoji:'🪴', style:'bottom:15%;left:3%;font-size:45px;' },
-      { emoji:'🖼️', style:'top:8%;left:40%;font-size:50px;' },
-      { emoji:'🛎️', style:'top:12%;right:25%;font-size:35px;cursor:pointer;', id:'bell' },
+    // === FLOOR ===
+    const floor = document.createElement('div');
+    floor.style.cssText = `position:absolute;bottom:0;left:0;right:0;height:45%;
+      background:linear-gradient(180deg,#d4a574 0%,#c4955a 100%);`;
+    container.appendChild(floor);
+
+    // Floor pattern (wood planks)
+    for (let i = 0; i < 12; i++) {
+      const plank = document.createElement('div');
+      plank.style.cssText = `position:absolute;bottom:${i*3.7}%;left:0;right:0;height:1px;
+        background:rgba(0,0,0,0.06);`;
+      floor.appendChild(plank);
+    }
+
+    // === CARPET ===
+    const carpet = document.createElement('div');
+    carpet.style.cssText = `position:absolute;bottom:8%;left:15%;right:15%;height:22%;
+      background:linear-gradient(135deg,#c0392b,#e74c3c,#c0392b);
+      border-radius:8px;border:4px solid #a93226;
+      box-shadow:0 2px 8px rgba(0,0,0,0.15);`;
+    container.appendChild(carpet);
+    // Carpet pattern
+    const carpetInner = document.createElement('div');
+    carpetInner.style.cssText = `position:absolute;top:12%;left:8%;right:8%;bottom:12%;
+      border:2px solid rgba(255,200,100,0.4);border-radius:4px;`;
+    carpet.appendChild(carpetInner);
+
+    // === WALL ===
+    const wall = document.createElement('div');
+    wall.style.cssText = `position:absolute;top:0;left:0;right:0;height:55%;
+      background:linear-gradient(180deg,#fdf2e9 0%,#fae5d3 60%,#e8c9a0 100%);`;
+    container.appendChild(wall);
+
+    // Wallpaper pattern (subtle stripes)
+    for (let i = 0; i < 20; i++) {
+      const stripe = document.createElement('div');
+      stripe.style.cssText = `position:absolute;top:0;bottom:0;left:${i*5.3}%;width:1px;
+        background:rgba(0,0,0,0.03);`;
+      wall.appendChild(stripe);
+    }
+
+    // Wall trim / wainscoting
+    const trim = document.createElement('div');
+    trim.style.cssText = `position:absolute;top:53%;left:0;right:0;height:4%;
+      background:linear-gradient(180deg,#d4a574,#b8860b);
+      box-shadow:0 2px 4px rgba(0,0,0,0.1);z-index:2;`;
+    container.appendChild(trim);
+
+    // === RECEPTION DESK ===
+    const desk = document.createElement('div');
+    desk.style.cssText = `position:absolute;top:28%;left:50%;transform:translateX(-50%);
+      width:min(300px,45%);height:28%;z-index:5;`;
+    container.appendChild(desk);
+
+    // Desk body
+    const deskBody = document.createElement('div');
+    deskBody.style.cssText = `position:absolute;bottom:0;left:0;right:0;height:65%;
+      background:linear-gradient(180deg,#8b4513,#6d3410);
+      border-radius:12px 12px 4px 4px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.2);`;
+    desk.appendChild(deskBody);
+    // Desk top surface
+    const deskTop = document.createElement('div');
+    deskTop.style.cssText = `position:absolute;top:0;left:-5%;right:-5%;height:15%;
+      background:linear-gradient(180deg,#a0522d,#8b4513);
+      border-radius:8px;box-shadow:0 3px 8px rgba(0,0,0,0.15);`;
+    desk.appendChild(deskTop);
+    // Desk panel detail
+    const deskPanel = document.createElement('div');
+    deskPanel.style.cssText = `position:absolute;bottom:10%;left:10%;right:10%;height:40%;
+      border:2px solid rgba(255,255,255,0.1);border-radius:6px;`;
+    deskBody.appendChild(deskPanel);
+
+    // Bell on desk
+    const bell = document.createElement('div');
+    bell.style.cssText = `position:absolute;top:-5%;right:15%;font-size:clamp(22px,4vw,32px);
+      cursor:pointer;z-index:6;filter:drop-shadow(1px 2px 1px rgba(0,0,0,0.2));`;
+    bell.textContent = '🛎️';
+    bell.onclick = () => Game.notify('🔔 Ding ! Bienvenue !');
+    desk.appendChild(bell);
+
+    // Sign on desk
+    const sign = document.createElement('div');
+    sign.style.cssText = `position:absolute;top:-8%;left:50%;transform:translateX(-50%);
+      background:linear-gradient(135deg,#fff8e1,#ffecb3);
+      padding:4px 14px;border-radius:10px;
+      font-size:clamp(10px,1.8vw,14px);font-weight:900;color:#8b4513;
+      box-shadow:0 2px 6px rgba(0,0,0,0.1);white-space:nowrap;z-index:6;
+      border:2px solid rgba(139,69,19,0.2);`;
+    sign.textContent = '🐾 Animal Hotel';
+    desk.appendChild(sign);
+
+    // === WALL DECORATIONS ===
+    // Pictures
+    const pics = [
+      { left:'5%', top:'8%', emoji:'🖼️', size:'clamp(35px,5vw,50px)' },
+      { left:'82%', top:'10%', emoji:'🖼️', size:'clamp(30px,4vw,45px)' },
     ];
-    decos.forEach(d => {
+    pics.forEach(p => {
       const el = document.createElement('div');
-      el.className = 'room-deco';
-      el.style.cssText = d.style;
-      el.textContent = d.emoji;
-      if (d.id) el.id = `deco-${d.id}`;
+      el.style.cssText = `position:absolute;left:${p.left};top:${p.top};font-size:${p.size};
+        z-index:3;filter:drop-shadow(1px 2px 1px rgba(0,0,0,0.1));`;
+      el.textContent = p.emoji;
       container.appendChild(el);
     });
 
-    // Welcome text
-    const welcome = document.createElement('div');
-    welcome.style.cssText = 'margin-top:8px;text-align:center;z-index:2;';
-    welcome.innerHTML = `<span style="font-size:16px;font-weight:800;color:var(--text);">
-      Bienvenue ${state.playerName} ! 🐾</span>
-      <br><span style="font-size:12px;color:var(--text-light);font-weight:600;">
-      Jour ${state.day} — ${state.animals.length} animaux à l'hôtel</span>`;
-    container.appendChild(welcome);
+    // Wall lamps
+    ['18%','78%'].forEach(left => {
+      const lamp = document.createElement('div');
+      lamp.style.cssText = `position:absolute;left:${left};top:15%;z-index:3;text-align:center;`;
+      lamp.innerHTML = `<div style="font-size:clamp(18px,3vw,28px);">🕯️</div>`;
+      container.appendChild(lamp);
+    });
 
-    // Animals in lobby
-    this._renderAnimals(container, state, 'lobby');
+    // Clock
+    const clock = document.createElement('div');
+    clock.style.cssText = `position:absolute;left:50%;top:5%;transform:translateX(-50%);
+      font-size:clamp(28px,4.5vw,42px);z-index:3;
+      filter:drop-shadow(1px 2px 1px rgba(0,0,0,0.1));`;
+    clock.textContent = '🕰️';
+    container.appendChild(clock);
 
-    // Tip at bottom
+    // === PLANTS ===
+    const plants = [
+      { emoji:'🪴', left:'2%', bottom:'32%', size:'clamp(35px,5vw,55px)' },
+      { emoji:'🌿', right:'3%', bottom:'34%', size:'clamp(30px,4.5vw,50px)' },
+      { emoji:'🪴', left:'88%', bottom:'32%', size:'clamp(35px,5vw,55px)' },
+    ];
+    plants.forEach(p => {
+      const el = document.createElement('div');
+      const pos = p.left ? `left:${p.left}` : `right:${p.right}`;
+      el.style.cssText = `position:absolute;${pos};bottom:${p.bottom};font-size:${p.size};z-index:4;
+        filter:drop-shadow(1px 2px 1px rgba(0,0,0,0.1));`;
+      el.textContent = p.emoji;
+      container.appendChild(el);
+    });
+
+    // === SOFAS ===
+    ['6%','75%'].forEach((left,i) => {
+      const sofa = document.createElement('div');
+      sofa.style.cssText = `position:absolute;left:${left};bottom:30%;
+        width:clamp(60px,12vw,100px);height:clamp(35px,6vw,50px);
+        background:linear-gradient(180deg,${i===0?'#e74c3c,#c0392b':'#3498db,#2980b9'});
+        border-radius:12px 12px 6px 6px;z-index:4;
+        box-shadow:0 3px 8px rgba(0,0,0,0.15);`;
+      container.appendChild(sofa);
+      // Sofa cushions
+      const cushion = document.createElement('div');
+      cushion.style.cssText = `position:absolute;top:15%;left:8%;right:8%;height:45%;
+        background:rgba(255,255,255,0.15);border-radius:8px;`;
+      sofa.appendChild(cushion);
+      // Sofa legs
+      ['8%','82%'].forEach(l => {
+        const leg = document.createElement('div');
+        leg.style.cssText = `position:absolute;bottom:-15%;left:${l};width:10%;height:15%;
+          background:#654321;border-radius:0 0 2px 2px;`;
+        sofa.appendChild(leg);
+      });
+    });
+
+    // === WELCOME BANNER ===
+    const banner = document.createElement('div');
+    banner.style.cssText = `position:absolute;top:55%;left:50%;transform:translateX(-50%);
+      z-index:10;text-align:center;
+      background:rgba(255,255,255,0.85);backdrop-filter:blur(8px);
+      padding:8px 24px;border-radius:20px;
+      box-shadow:0 3px 12px rgba(0,0,0,0.08);`;
+    banner.innerHTML = `
+      <div style="font-size:clamp(14px,2.5vw,18px);font-weight:900;color:var(--text);">
+        Bienvenue ${state.playerName} ! 🐾
+      </div>
+      <div style="font-size:clamp(10px,1.8vw,13px);color:var(--text-light);font-weight:600;">
+        Jour ${state.day} — ${state.animals.length} animaux à l'hôtel
+      </div>`;
+    container.appendChild(banner);
+
+    // === ANIMALS on the carpet / around the lobby ===
+    if (state.animals.length > 0) {
+      const positions = [
+        { left:'35%', bottom:'12%' },
+        { left:'55%', bottom:'14%' },
+        { left:'22%', bottom:'10%' },
+        { left:'68%', bottom:'11%' },
+        { left:'45%', bottom:'8%' },
+        { left:'30%', bottom:'16%' },
+      ];
+      state.animals.forEach((animal, idx) => {
+        const aType = ANIMAL_TYPES[animal.type];
+        if (!aType) return;
+        const pos = positions[idx % positions.length];
+
+        const div = document.createElement('div');
+        div.style.cssText = `position:absolute;left:${pos.left};bottom:${pos.bottom};
+          z-index:${15+idx};cursor:pointer;text-align:center;
+          transition:transform 0.2s;`;
+
+        const img = document.createElement('img');
+        img.src = `assets/game/animals/${aType.img}.png`;
+        img.className = 'animal-idle';
+        img.style.cssText = `width:clamp(55px,10vw,95px);height:auto;
+          filter:drop-shadow(2px 3px 2px rgba(0,0,0,0.2));`;
+        img.style.animationDelay = `${idx * 0.5}s`;
+        div.appendChild(img);
+
+        // Face
+        const face = this._getAnimalFace(animal);
+        const faceImg = document.createElement('img');
+        faceImg.src = `assets/game/faces/${face}.png`;
+        faceImg.style.cssText = `position:absolute;top:2%;left:50%;transform:translateX(-50%);
+          width:clamp(22px,4vw,35px);pointer-events:none;`;
+        div.appendChild(faceImg);
+
+        // Name tag
+        const tag = document.createElement('div');
+        tag.className = 'animal-name-tag';
+        tag.textContent = `${aType.emoji} ${animal.name}`;
+        div.appendChild(tag);
+
+        // Need dots
+        const dots = document.createElement('div');
+        dots.className = 'animal-needs-dots';
+        ['hunger','happiness','cleanliness','health'].forEach(need => {
+          const dot = document.createElement('div');
+          const val = animal[need] || 0.5;
+          dot.className = 'need-dot ' + (val > 0.6 ? 'need-full' : val > 0.3 ? 'need-mid' : 'need-low');
+          dots.appendChild(dot);
+        });
+        div.appendChild(dots);
+
+        div.onclick = () => Game.selectAnimal(idx, 'lobby');
+        div.onmouseenter = () => div.style.transform = 'scale(1.1)';
+        div.onmouseleave = () => div.style.transform = '';
+        container.appendChild(div);
+      });
+    } else {
+      // Empty lobby message
+      const empty = document.createElement('div');
+      empty.style.cssText = `position:absolute;bottom:18%;left:50%;transform:translateX(-50%);
+        z-index:10;text-align:center;font-size:14px;color:var(--text-light);font-weight:600;
+        background:rgba(255,255,255,0.7);padding:10px 20px;border-radius:16px;`;
+      empty.textContent = '📱 Appelle un propriétaire pour recevoir un animal !';
+      container.appendChild(empty);
+    }
+
+    // Tip
     if (!state.tutorialDone) {
       const tip = document.createElement('div');
-      tip.style.cssText = 'position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:12px;color:var(--text-light);font-weight:600;text-align:center;background:rgba(255,255,255,0.7);padding:6px 16px;border-radius:20px;';
+      tip.style.cssText = `position:absolute;bottom:3%;left:50%;transform:translateX(-50%);
+        font-size:12px;color:var(--text-light);font-weight:600;text-align:center;
+        background:rgba(255,255,255,0.8);padding:6px 16px;border-radius:20px;z-index:20;`;
       tip.textContent = '👆 Tape sur un animal pour t\'en occuper !';
       container.appendChild(tip);
     }
+
+    // === DOOR at top ===
+    const door = document.createElement('div');
+    door.style.cssText = `position:absolute;top:20%;left:50%;transform:translateX(-50%);
+      width:clamp(40px,6vw,60px);height:clamp(55px,9vw,80px);
+      background:linear-gradient(180deg,#8b4513,#654321);
+      border-radius:20px 20px 0 0;z-index:2;
+      box-shadow:0 2px 8px rgba(0,0,0,0.2);`;
+    container.appendChild(door);
+    // Door handle
+    const handle = document.createElement('div');
+    handle.style.cssText = `position:absolute;top:55%;right:15%;width:8px;height:8px;
+      background:#ffd700;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,0.3);`;
+    door.appendChild(handle);
   },
 
   // Render rooms scene

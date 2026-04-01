@@ -291,7 +291,8 @@ html, body {
 
 /* Room backgrounds */
 .room-lobby {
-  background: linear-gradient(180deg, #ffe8d6 0%, #ffd7ba 100%);
+  background: linear-gradient(180deg, #fdf2e9 0%, #d4a574 100%);
+  position:relative;
 }
 .room-rooms {
   background: linear-gradient(180deg, #e8daef 0%, #d7bde2 100%);
