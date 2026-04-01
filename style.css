@@ -302,19 +302,24 @@ html, body {
   position: relative;
 }
 .room-kitchen {
-  background: linear-gradient(180deg, #fdebd0 0%, #f9e2ae 100%);
+  background: linear-gradient(180deg, #fff8e1 0%, #d7ccc8 100%);
+  position: relative;
 }
 .room-bath {
-  background: linear-gradient(180deg, #d6eaf8 0%, #aed6f1 100%);
+  background: linear-gradient(180deg, #e0f7fa 0%, #c5cae9 100%);
+  position: relative;
 }
 .room-shop {
-  background: linear-gradient(180deg, #d5f5e3 0%, #a9dfbf 100%);
+  background: linear-gradient(180deg, #e8f5e9 0%, #eeeeee 100%);
+  position: relative;
 }
 .room-arcade {
-  background: linear-gradient(180deg, #fadbd8 0%, #f5b7b1 100%);
+  background: linear-gradient(180deg, #1a237e 0%, #311b92 100%);
+  position: relative;
 }
 .room-phone {
-  background: linear-gradient(180deg, #e8daef 0%, #d2b4de 100%);
+  background: linear-gradient(180deg, #efebe9 0%, #bcaaa4 100%);
+  position: relative;
 }
 
 /* Room furniture / decorations */

@@ -408,8 +408,20 @@ const Game = {
       return;
     }
     Audio.play('phone');
+    // Generate a pending call (animal proposal) with yes/no choice
     const animal = generateRandomAnimal();
     animal.arrivalDay = this.state.day;
+    const ownerNames = ['Mme Dupont','M. Martin','Mme Bernard','M. Petit',
+      'Mme Robert','M. Durand','Mme Moreau','M. Simon','Mme Laurent','M. Michel'];
+    animal.ownerName = ownerNames[Math.floor(Math.random() * ownerNames.length)];
+    this.state._pendingCall = animal;
+    this.renderCurrentRoom();
+  },
+
+  acceptCall() {
+    const animal = this.state._pendingCall;
+    if (!animal) return;
+    Audio.play('happy');
     // Assign to first free room
     for (let i = 0; i < 6; i++) {
       if (!this.state.animals.find(a => a.room === i)) {
@@ -417,15 +429,20 @@ const Game = {
         break;
       }
     }
-    if (animal.room === -1) animal.room = this.state.animals.length;
+    if (animal.room === undefined || animal.room === -1) animal.room = this.state.animals.length;
     this.state.animals.push(animal);
-
-    const aType = ANIMAL_TYPES[animal.type];
-    const msg = OWNER_MESSAGES[Math.floor(Math.random()*OWNER_MESSAGES.length)].replace('{animal}', animal.name);
-    this.showDialogue('📞 Propriétaire', `${msg}\n\n${aType.emoji} ${animal.name} le ${aType.name} arrive !\nSéjour: ${animal.stayDuration} jours`);
-
     this.state.coins += 10;
+    this.state._pendingCall = null;
     this._updateHUD();
+    const aType = ANIMAL_TYPES[animal.type];
+    this.notify(`✅ ${aType.emoji} ${animal.name} arrive ! +10 💰`);
+    this.renderCurrentRoom();
+  },
+
+  declineCall() {
+    Audio.play('sad');
+    this.state._pendingCall = null;
+    this.notify('📞 Appel refusé.');
     this.renderCurrentRoom();
   },
 
