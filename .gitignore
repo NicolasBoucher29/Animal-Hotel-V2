@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+*.swp
+
+# Raw asset downloads (we keep only game/ folder)
+assets/_extracted/
+assets/*.zip
+assets/*.rar
+
+# Old pixel art files (replaced by new iPad version)
+sprites.js
+maps.js
+engine.js
+entities.js
+dialogue.js
+quests.js
+
+# PSD source files (too large for git)
+assets/game/gui/*.psd
